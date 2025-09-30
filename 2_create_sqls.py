@@ -32,6 +32,11 @@ POSTING_DATA = "UPDATE IGNORE POSTING_DATA SET c_personid = %s WHERE c_personid 
 POSTING_DATA_FOR_SOURCE_UPDATE = "UPDATE IGNORE POSTING_DATA INNER JOIN POSTED_TO_OFFICE_DATA ON POSTING_DATA.c_posting_id = POSTED_TO_OFFICE_DATA.c_posting_id SET POSTING_DATA.c_personid = %s WHERE POSTED_TO_OFFICE_DATA.c_personid = %s AND POSTED_TO_OFFICE_DATA.c_source = %s;"
 STATUS_DATA = "UPDATE IGNORE STATUS_DATA SET c_personid = %s WHERE c_personid = %s;"
 TEXT_DATA = "UPDATE IGNORE BIOG_TEXT_DATA SET c_personid = %s WHERE c_personid = %s;"
+EVENTS_DATA = "UPDATE IGNORE EVENTS_DATA SET c_personid = %s WHERE c_personid = %s;"
+POSSESSION_DATA = "UPDATE IGNORE POSSESSION_DATA SET c_personid = %s WHERE c_personid = %s;"
+# DATABASE_LINK_DATA intentionally excluded --
+# this table maintains external database references and should preserve
+# original IDs to ensure cross-platform data integrity and audit trails
 # BIOG_MAIN = "UPDATE IGNORE BIOG_MAIN SET c_personid = %s WHERE c_personid = %s;"
 update_sql_list = [
     ALTNAME_DATA,
@@ -50,6 +55,9 @@ update_sql_list = [
     POSTED_TO_OFFICE_DATA,
     STATUS_DATA,
     TEXT_DATA,
+    EVENTS_DATA,
+    POSSESSION_DATA,
+    # DATABASE_LINK_DATA excluded - see comment above
 ]
 
 # biog_main must be placed at the end of this list
@@ -72,6 +80,9 @@ POSTING_DATA = "DELETE FROM POSTING_DATA WHERE c_personid = %s;"
 POSTING_DATA_FOR_SOURCE_DELTE = "DELETE POSTING_DATA FROM POSTING_DATA INNER JOIN POSTED_TO_OFFICE_DATA ON POSTING_DATA.c_posting_id = POSTED_TO_OFFICE_DATA.c_posting_id WHERE POSTED_TO_OFFICE_DATA.c_personid = %s AND POSTED_TO_OFFICE_DATA.c_source = %s;"
 STATUS_DATA = "DELETE FROM STATUS_DATA WHERE c_personid = %s;"
 TEXT_DATA = "DELETE FROM BIOG_TEXT_DATA WHERE c_personid = %s;"
+EVENTS_DATA = "DELETE FROM EVENTS_DATA WHERE c_personid = %s;"
+POSSESSION_DATA = "DELETE FROM POSSESSION_DATA WHERE c_personid = %s;"
+# DATABASE_LINK_DATA intentionally excluded - see comment above
 BIOG_MAIN = "DELETE FROM BIOG_MAIN WHERE c_personid = %s;"
 delete_sql_list = [
     ALTNAME_DATA,
@@ -90,6 +101,9 @@ delete_sql_list = [
     POSTED_TO_OFFICE_DATA,
     STATUS_DATA,
     TEXT_DATA,
+    EVENTS_DATA,
+    POSSESSION_DATA,
+    # DATABASE_LINK_DATA excluded - see comment above
     BIOG_MAIN,
 ]
 
@@ -115,6 +129,7 @@ def generate_update_sqls(id_list):
         for sql_list_value in update_sql_list:
             # For splitting persons base on source id
             if source_id != "None":
+                assert sql_list_value.endswith(";"), f"SQL statement must end with semicolon: {sql_list_value}"
                 new_sql = sql_list_value[:-1] + SOURCE_SQL
                 if "BIOG_SOURCE_DATA" in new_sql:
                     new_sql = new_sql.replace("c_source", "c_textid")
@@ -136,6 +151,7 @@ def generate_delete_sqls(id_list):
         source_id = id_row[2]
         for sql_list_value in delete_sql_list:
             if source_id != "None":
+                assert sql_list_value.endswith(";"), f"SQL statement must end with semicolon: {sql_list_value}"
                 new_sql = sql_list_value[:-1] + SOURCE_SQL
                 if "BIOG_SOURCE_DATA" in new_sql:
                     new_sql = new_sql.replace("c_source", "c_textid")

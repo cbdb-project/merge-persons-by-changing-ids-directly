@@ -27,14 +27,14 @@ for i in range(len(input_original_pd)):
             id_source_list = re.sub(r"[）\)]", "", input_original_pd[j][i])
             id_source_list = re.sub(r"（", "(", id_source_list)
             id_source_list = id_source_list.split("(")
-            input_original_pd[j][i] = id_source_list[0]
+            input_original_pd.loc[i, j] = id_source_list[0]
         except TypeError:
             continue
         try:
             if is_int(input_original_pd[0][i]):
-                input_original_pd[0][i] = int(input_original_pd[0][i])
+                input_original_pd.loc[i, 0] = int(input_original_pd[0][i])
             if is_int(input_original_pd[j][i]):
-                input_original_pd[j][i] = int(input_original_pd[j][i])
+                input_original_pd.loc[i, j] = int(input_original_pd[j][i])
             else:
                 continue
             if not math.isnan(input_original_pd[0][i]) and not math.isnan(

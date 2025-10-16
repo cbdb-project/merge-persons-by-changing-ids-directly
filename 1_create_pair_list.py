@@ -20,9 +20,14 @@ print(input_original_pd.head())
 
 element_pair_list = []
 source_list = []
+reason_list = []
 element_pair_with_name_list = []
 for i in range(len(input_original_pd)):
-    for j in range(1, len(input_original_pd.columns)):
+    # Extract reason from column 0
+    reason = input_original_pd[0][i] if pd.notna(input_original_pd[0][i]) else ""
+    
+    # Process ID columns starting from index 2 (column 0 is reason, column 1 is empty)
+    for j in range(2, len(input_original_pd.columns)):
         try:
             id_source_list = re.sub(r"[）\)]", "", input_original_pd[j][i])
             id_source_list = re.sub(r"（", "(", id_source_list)
@@ -31,35 +36,38 @@ for i in range(len(input_original_pd)):
         except TypeError:
             continue
         try:
-            if is_int(input_original_pd[0][i]):
-                input_original_pd.loc[i, 0] = int(input_original_pd[0][i])
+            # Column 2 is now the first ID column
+            if is_int(input_original_pd[2][i]):
+                input_original_pd.loc[i, 2] = int(input_original_pd[2][i])
             if is_int(input_original_pd[j][i]):
                 input_original_pd.loc[i, j] = int(input_original_pd[j][i])
             else:
                 continue
-            if not math.isnan(input_original_pd[0][i]) and not math.isnan(
+            if not math.isnan(input_original_pd[2][i]) and not math.isnan(
                 input_original_pd[j][i]
             ):
                 element_pair_list.append(
-                    [input_original_pd[0][i], int(input_original_pd[j][i])]
+                    [input_original_pd[2][i], int(input_original_pd[j][i])]
                 )
                 if len(id_source_list) > 1:
                     source_list.append(id_source_list[1])
                 else:
                     source_list.append("None")
+                reason_list.append(reason)
         except TypeError:
             print(i)
             print(j)
-            print(math.isnan(input_original_pd[0][i]))
+            print(math.isnan(input_original_pd[2][i]))
             print("here")
             print(input_original_pd[j][i])
             print(type(input_original_pd[j][i]))
             print(math.isnan(input_original_pd[j][i]))
             raise
 print(f"source_list: {source_list}")
-# add each element in source_list to the end of each list in element_pair_list
+# add each element in source_list and reason to the end of each list in element_pair_list
 for i in range(len(element_pair_list)):
     element_pair_list[i].append(source_list[i])
+    element_pair_list[i].append(reason_list[i])
 
 output_pd = pd.DataFrame(element_pair_list)
 output_pd.to_csv("id_list.txt", sep="\t", header=None, index=False)
@@ -100,7 +108,7 @@ for row in element_pair_list:
     if person_a_name != person_b_name:
         need_check_token = "need_check"
     element_pair_with_name_list.append(
-        [row[0], person_a_name, row[1], person_b_name, need_check_token, row[2]]
+        [row[0], person_a_name, row[1], person_b_name, need_check_token, row[2], row[3]]
     )
 
 output_pd = pd.DataFrame(element_pair_with_name_list)

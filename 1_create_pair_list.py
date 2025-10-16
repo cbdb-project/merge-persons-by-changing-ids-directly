@@ -26,8 +26,8 @@ for i in range(len(input_original_pd)):
     # Extract reason from column 0
     reason = input_original_pd[0][i] if pd.notna(input_original_pd[0][i]) else ""
     
-    # Process ID columns starting from index 2 (column 0 is reason, column 1 is empty)
-    for j in range(2, len(input_original_pd.columns)):
+    # Process ID columns starting from index 3 to compare with column 2 (column 0 is reason, column 1 is empty, column 2 is first ID)
+    for j in range(3, len(input_original_pd.columns)):
         try:
             id_source_list = re.sub(r"[）\)]", "", input_original_pd[j][i])
             id_source_list = re.sub(r"（", "(", id_source_list)

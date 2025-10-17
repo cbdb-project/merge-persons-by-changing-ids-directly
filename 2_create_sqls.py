@@ -170,7 +170,9 @@ def generate_delete_sqls(id_list):
 
 def output_data(output_file, update_sqls):
     with open(output_file, "w", encoding="utf-8") as f:
+        f.write("BEGIN TRANSACTION;\n\n")
         f.write(update_sqls)
+        f.write("\n\nCOMMIT;\n")
 
 
 # list format [confirmed_id, to_remove_id]

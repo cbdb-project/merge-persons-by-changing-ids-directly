@@ -25,44 +25,35 @@ element_pair_with_name_list = []
 for i in range(len(input_original_pd)):
     # Extract reason from column 0
     reason = input_original_pd[0][i] if pd.notna(input_original_pd[0][i]) else ""
-    
-    # Process ID columns starting from index 3 to compare with column 2 (column 0 is reason, column 1 is empty, column 2 is first ID)
-    for j in range(3, len(input_original_pd.columns)):
-        try:
-            id_source_list = re.sub(r"[）\)]", "", input_original_pd[j][i])
-            id_source_list = re.sub(r"（", "(", id_source_list)
-            id_source_list = id_source_list.split("(")
-            input_original_pd.loc[i, j] = id_source_list[0]
-        except TypeError:
+
+    id_to_source = {}
+    for j in range(2, len(input_original_pd.columns)):
+        cell_value = input_original_pd[j][i]
+        if pd.isna(cell_value):
             continue
-        try:
-            # Column 2 is now the first ID column
-            if is_int(input_original_pd[2][i]):
-                input_original_pd.loc[i, 2] = int(input_original_pd[2][i])
-            if is_int(input_original_pd[j][i]):
-                input_original_pd.loc[i, j] = int(input_original_pd[j][i])
-            else:
-                continue
-            if not math.isnan(input_original_pd[2][i]) and not math.isnan(
-                input_original_pd[j][i]
-            ):
-                element_pair_list.append(
-                    [input_original_pd[2][i], int(input_original_pd[j][i])]
-                )
-                if len(id_source_list) > 1:
-                    source_list.append(id_source_list[1])
-                else:
-                    source_list.append("None")
-                reason_list.append(reason)
-        except TypeError:
-            print(i)
-            print(j)
-            print(math.isnan(input_original_pd[2][i]))
-            print("here")
-            print(input_original_pd[j][i])
-            print(type(input_original_pd[j][i]))
-            print(math.isnan(input_original_pd[j][i]))
-            raise
+        cell_value = re.sub(r"[）\)]", "", str(cell_value))
+        cell_value = re.sub(r"（", "(", cell_value)
+        id_source_list = [part.strip() for part in cell_value.split("(")]
+        id_value_str = id_source_list[0]
+        if not is_int(id_value_str):
+            continue
+        id_value = int(id_value_str)
+        input_original_pd.loc[i, j] = id_value
+        source_value = (
+            id_source_list[1] if len(id_source_list) > 1 and id_source_list[1] else "None"
+        )
+        if id_value not in id_to_source:
+            id_to_source[id_value] = source_value
+
+    if len(id_to_source) <= 1:
+        continue
+
+    sorted_ids = sorted(id_to_source.keys())
+    main_id = sorted_ids[0]
+    for other_id in sorted(sorted_ids[1:], reverse=True):
+        element_pair_list.append([main_id, other_id])
+        source_list.append(id_to_source.get(other_id, "None"))
+        reason_list.append(reason)
 print(f"source_list: {source_list}")
 # add each element in source_list and reason to the end of each list in element_pair_list
 for i in range(len(element_pair_list)):

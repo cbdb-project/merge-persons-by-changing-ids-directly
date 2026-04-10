@@ -82,31 +82,31 @@ max_counter = len(element_pair_list)
 for row in element_pair_list:
     counter += 1
     need_check_token = ""
-    print(
-        f"{counter/max_counter*100:.2f}% finished. Now working on: {row[0]}, {row[1]}"
-    )
+    # print(
+    #     f"{counter/max_counter*100:.2f}% finished. Now working on: {row[0]}, {row[1]}"
+    # )
     person_a_name = ""
     person_b_name = ""
-    person_a_query_url = read_name_api_url + str(row[0])
-    person_b_query_url = read_name_api_url + str(row[1])
-    person_a_query = requests.get(person_a_query_url)
-    person_b_query = requests.get(person_b_query_url)
-    if person_a_query.status_code == 200:
-        person_a_query_json = person_a_query.json()
-        if "c_name_chn" in person_a_query_json:
-            person_a_name = person_a_query_json["c_name_chn"]
-        else:
-            person_a_name = "None"
-    else:
-        person_a_name = "None"
-    if person_b_query.status_code == 200:
-        person_b_query_json = person_b_query.json()
-        if "c_name_chn" in person_b_query_json:
-            person_b_name = person_b_query_json["c_name_chn"]
-        else:
-            person_b_name = "None"
-    if person_a_name != person_b_name:
-        need_check_token = "need_check"
+    # person_a_query_url = read_name_api_url + str(row[0])
+    # person_b_query_url = read_name_api_url + str(row[1])
+    # person_a_query = requests.get(person_a_query_url)
+    # person_b_query = requests.get(person_b_query_url)
+    # if person_a_query.status_code == 200:
+    #     person_a_query_json = person_a_query.json()
+    #     if "c_name_chn" in person_a_query_json:
+    #         person_a_name = person_a_query_json["c_name_chn"]
+    #     else:
+    #         person_a_name = "None"
+    # else:
+    #     person_a_name = "None"
+    # if person_b_query.status_code == 200:
+    #     person_b_query_json = person_b_query.json()
+    #     if "c_name_chn" in person_b_query_json:
+    #         person_b_name = person_b_query_json["c_name_chn"]
+    #     else:
+    #         person_b_name = "None"
+    # if person_a_name != person_b_name:
+    #     need_check_token = "need_check"
     element_pair_with_name_list.append(
         [row[0], person_a_name, row[1], person_b_name, need_check_token, row[2], row[3]]
     )

@@ -19,6 +19,8 @@ with open("input.txt", "r", encoding="utf-8") as file:
             temp_main_id = row[0]
             temp_name_str = row[1]
         else:
+            if row[0] == "":
+                print(row)
             output.append([min(int(temp_main_id), int(row[0])), max(int(temp_main_id), int(row[0])), f"{temp_name_str};{row[1]}"])
 
 df = pd.DataFrame(output)
